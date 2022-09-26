@@ -7,6 +7,7 @@ const toggleBtn = document.getElementById('toggle-btn');
 const deleteBtn = document.getElementById('delete-btn');
 const titleArea = document.getElementById('text-area-title');
 const bodyArea = document.getElementById('text-area-body');
+const formWrapper = document.getElementById('temp');
 const container = document.getElementById("parent-grid");
 
 const getAllNotes = () => {
@@ -21,7 +22,7 @@ const refreshNotes = () => {
     notes = getAllNotes();
     container.innerHTML = '';
 
-    notes?.map((note) => {
+    notes?.map((note, index) => {
         const card = document.createElement('div');
         card.innerHTML = `
       <div class="bg-white dark:bg-background dark:text-offwhite border dark:border-gray-500 dark:hover:border-gray-300 rounded-md shadow-md p-2">
@@ -33,12 +34,12 @@ const refreshNotes = () => {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
               </svg>
           </button>
-          <button class="hover:bg-gray-200 dark:bg-gray-200 rounded-md p-1">
+          <button onCLick='edit(this.id)' id='${index}' class="hover:bg-gray-200 dark:bg-gray-200 rounded-md p-1">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-700">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
               </svg>
           </button>
-          <button value='${note.id}' id='delete-btn' class="hover:bg-gray-200 dark:bg-gray-200 rounded-md p-1">
+          <button onClick='deleteNote(this.id)' id='${index}' id='delete-btn' class="hover:bg-gray-200 dark:bg-gray-200 rounded-md p-1">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-700">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
               </svg>
@@ -52,55 +53,49 @@ const refreshNotes = () => {
 
 refreshNotes();
 
-
-// const noteConstructor = (title, body) => {
-//     this.title = title;
-//     this.body = body;
-//     //this.updated = date;
-//     return this;
-
-// }
-
 const addNote = () => {
     const title = titleArea.value;
     const body = bodyArea.value;
-    let id = Math.floor(Math.random() * 100);
+    let id;
     let newNote = {
         id,
         title,
         body
     }
+
+    //assigning id if it already exists
+    formWrapper.id === 'temp' ? newNote.id = Math.floor(Math.random() * 1000) : newNote.id = parseInt(formWrapper.id);
     return newNote;
 }
 
 const saveNote = (e) => {
     e.preventDefault();
-    const getNotes = getAllNotes();
+    //const getNotes = getAllNotes();
     const noteToSave = addNote();
-    const isExists = getNotes?.find(note => note.id === noteToSave.id)
+    const isExists = notes?.find(note => note.id === noteToSave.id)
 
     if (isExists) {
         isExists.title = noteToSave.title;
         isExists.body = noteToSave.body;
         //isExists.updated = new Date.toISOString();
     } else {
-        noteToSave.id = Math.floor(Math.random() * 100);
         //noteToSave.updated = new Date.toISOString();
         notes.push(noteToSave);
     }
 
     localStorage.setItem('saved-notes', JSON.stringify(notes));
     resetForm();
+    formWrapper.id = 'temp';
     refreshNotes();
 }
 
-const deleteNote = () => {
+const deleteNote = (id) => {
     const getNotes = getAllNotes();
-    const newNotes = getNotes.filter(note => note.id != deleteBtn.value);
-    localStorage.setItem('saved-notes', JSON.stringify(newNotes));
+    //const newNotes = getNotes.filter(note => note.id != id);
+    getNotes.splice(id, 1)
+    localStorage.setItem('saved-notes', JSON.stringify(getNotes));
+    refreshNotes();
 }
-
-//deleteBtn.addEventListener('click', deleteNote);
 
 const MOON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
@@ -148,8 +143,15 @@ saveBtn.addEventListener('click', saveNote);
 resetBtn.addEventListener('click', resetForm);
 toggleBtn.addEventListener('click', toggle)
 
-function edit() {
-    titleArea.value = '';
-    bodyArea.value = '';
-    document.body.scrollTop();
+function edit(index) {
+    titleArea.value = notes[index].title;
+    bodyArea.value = notes[index].body;
+    formWrapper.id = notes[index].id;
+
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+}
+
+function copyToClipboard() {
+    const el = document.getElementById('')
 }
