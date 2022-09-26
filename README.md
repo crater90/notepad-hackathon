@@ -10,4 +10,6 @@ this is a simple notepad web app which stores data in the browser local storage.
 <li>Copy notes through clipboard icon.
 </ul>
 
+
+
 ###
