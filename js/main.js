@@ -3,6 +3,8 @@ let notes = [];
 const saveBtn = document.getElementById('save-btn');
 const resetBtn = document.getElementById('reset-btn');
 const toggleBtn = document.getElementById('toggle-btn');
+const underlineBtn = document.getElementById('underline-btn');
+const boldBtn = document.getElementById('bold-btn');
 
 const deleteBtn = document.getElementById('delete-btn');
 const titleArea = document.getElementById('text-area-title');
@@ -25,11 +27,11 @@ const refreshNotes = () => {
     notes?.map((note, index) => {
         const card = document.createElement('div');
         card.innerHTML = `
-      <div class="bg-white dark:bg-background dark:text-offwhite border dark:border-gray-500 dark:hover:border-gray-300 rounded-md shadow-md p-2">
+      <div id='${note.id}' class="bg-white dark:bg-background dark:text-offwhite border dark:border-gray-500 dark:hover:border-gray-300 rounded-md shadow-md p-2">
       <h2 class="font-semibold sm:text-sm md:text-sm lg:text-xl" id="note-title">${note.title}</h2>
       <p class="sm:text-sm lg:text-base" id="note-body">${note.body}</p>
       <div class="mt-2 flex justify-end gap-x-4 px-2">
-          <button class="hover:bg-gray-200 dark:bg-gray-200 rounded-md p-1" id="copy-btn">
+          <button onClick='copyToClipboard(this.id)' id='${index}' class="hover:bg-gray-200 dark:bg-gray-200 rounded-md p-1" id="copy-btn">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-700">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
               </svg>
@@ -132,26 +134,40 @@ const toggle = () => {
     }
 }
 
-
-
 function resetForm() {
     titleArea.value = '';
     bodyArea.value = '';
 }
-
-saveBtn.addEventListener('click', saveNote);
-resetBtn.addEventListener('click', resetForm);
-toggleBtn.addEventListener('click', toggle)
 
 function edit(index) {
     titleArea.value = notes[index].title;
     bodyArea.value = notes[index].body;
     formWrapper.id = notes[index].id;
 
+    //scrolling to top
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
 }
 
-function copyToClipboard() {
-    const el = document.getElementById('')
+function copyToClipboard(index) {
+    const textToCopy = notes[index].body;
+    navigator.clipboard.writeText(textToCopy);
+    alert("copied text");
 }
+
+function textToBold(e) {
+    e.preventDefault();
+    bodyArea.style.fontWeight === 'normal' ? bodyArea.style.fontWeight = 'bold' : bodyArea.style.fontWeight = 'normal';
+}
+
+function textToUnderline(e) {
+    e.preventDefault();
+    bodyArea.style.textDecoration === 'underline' ? bodyArea.style.textDecoration = 'none' : bodyArea.style.textDecoration = 'underline';
+}
+
+//eventListeners
+saveBtn.addEventListener('click', saveNote);
+resetBtn.addEventListener('click', resetForm);
+toggleBtn.addEventListener('click', toggle)
+boldBtn.addEventListener('click', textToBold);
+underlineBtn.addEventListener('click', textToUnderline);
