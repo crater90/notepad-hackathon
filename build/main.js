@@ -82,7 +82,7 @@ const saveNote = (e) => {
         //isExists.updated = new Date.toISOString();
     } else {
         //noteToSave.updated = new Date.toISOString();
-        notes.push(noteToSave);
+        notes.unshift(noteToSave);
     }
 
     localStorage.setItem('saved-notes', JSON.stringify(notes));
